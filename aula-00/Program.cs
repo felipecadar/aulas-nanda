@@ -1,19 +1,35 @@
-﻿using Newtonsoft.Json;
+﻿using Classes;
 
-Account account = new Account
+var account = new BankAccount("Amanda", 1000);
+Console.WriteLine($"Account {account.Number} was created for {account.Owner} with {account.Balance} initial balance.");
+
+account.MakeWithdrawal(500, DateTime.Now, "Rent payment");
+Console.WriteLine(account.Balance);
+account.MakeDeposit(100, DateTime.Now, "Friend paid me back");
+Console.WriteLine(account.Balance);
+
+
+// Test that the initial balances must be positive.
+BankAccount invalidAccount;
+try
 {
-    Name = "John Doe",
-    Email = "john@nuget.org",
-    DOB = new DateTime(1980, 2, 20, 0, 0, 0, DateTimeKind.Utc),
-};
-
-Console.WriteLine(account.Name);
-Console.WriteLine(account.Email);
-Console.WriteLine(account.DOB);
-
-public class Account
-{
-    public string? Name { get; set; } // "?" indica que o campo pode ser nulo
-    public string? Email { get; set; }
-    public DateTime? DOB { get; set; }
+    invalidAccount = new BankAccount("invalid", -55);
 }
+catch (ArgumentOutOfRangeException e)
+{
+    Console.WriteLine("Exception caught creating account with negative balance");
+    // Console.WriteLine(e.ToString());
+}
+
+// Test for a negative balance.
+try
+{
+    account.MakeWithdrawal(750, DateTime.Now, "Attempt to overdraw");
+}
+catch (InvalidOperationException e)
+{
+    Console.WriteLine("Exception caught trying to overdraw");
+    // Console.WriteLine(e.ToString());
+}
+
+Console.WriteLine(account.GetAccountHistory());
